@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>反关财经 - Scroll (SCR) 分析</title>
+    <link rel="icon" type="image/svg+xml" href="Scroll.svg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide-icons@0.309.0/dist/umd/lucide-icons.js">
+    <style>
+        /* 自定义社交媒体图标样式 */
+        .social-icon {
+            transition: transform 0.3s ease, color 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: #f5f5f5;
+        }
+        
+        .social-icon:hover {
+            transform: scale(1.15);
+        }
+        
+        /* 自定义各平台悬停颜色 */
+        .bilibili-icon:hover {
+            color: #00a1d6 !important;
+        }
+        
+        .twitter-icon:hover {
+            color: #1DA1F2 !important;
+        }
+        
+        .youtube-icon:hover {
+            color: #FF0000 !important;
+        }
+        
+        .douyin-icon:hover {
+            color: #000000 !important;
+        }
+        
+        .kuaishou-icon:hover {
+            color: #ff5500 !important;
+        }
+        
+        .weibo-icon:hover {
+            color: #e6162d !important;
+        }
+
+        /* 掉落以太坊动画 */
+        @keyframes fallDown {
+            0% {
+                transform: translateY(0) translateX(0) rotate(0deg) scale(0.5);
+                opacity: 0;
+            }
+            10% {
+                transform: translateY(5px) translateX(0) rotate(36deg) scale(1.2);
+                opacity: 1;
+            }
+            20% {
+                transform: translateY(25px) translateX(0) rotate(72deg) scale(1);
+            }
+            80% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(calc(100vh)) translateX(0) rotate(360deg) scale(0.8);
+                opacity: 0;
+            }
+        }
+
+        @keyframes sway {
+            0% { margin-left: -30px; }
+            50% { margin-left: 30px; }
+            100% { margin-left: -30px; }
+        }
+
+        .falling-crypto {
+            position: fixed;
+            z-index: 1000;
+            width: 40px;
+            height: 40px;
+            pointer-events: none;
+            animation: fallDown 4s ease-in forwards, sway 2.5s ease-in-out infinite;
+            filter: drop-shadow(0 0 8px rgba(98, 126, 234, 0.6));
+        }
+
+        /* 掉落Aave代币动画 */
+        @keyframes fallDown {
+            0% {
+                transform: translateY(0) translateX(0) rotate(0deg) scale(0.5);
+                opacity: 0;
+            }
+            10% {
+                transform: translateY(5px) translateX(0) rotate(36deg) scale(1.2);
+                opacity: 1;
+            }
+            20% {
+                transform: translateY(25px) translateX(0) rotate(72deg) scale(1);
+            }
+            80% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(calc(100vh)) translateX(0) rotate(360deg) scale(0.8);
+                opacity: 0;
+            }
+        }
+
+        /* 提示消息样式 */
+        .follow-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #1d4ed8, #7e22ce);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 8px;
+            font-size: 1.4rem;
+            font-weight: bold;
+            z-index: 1001;
+            opacity: 0;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            pointer-events: none;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform: translate(-50%, -50%) scale(0.8);
+        }
+
+        .follow-message.show {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        
+        /* 发财字体特效 */
+        .highlight {
+            color: #FFD700;
+            font-weight: bold;
+            display: inline-block;
+            animation: pulse 1s infinite alternate;
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+            }
+            100% {
+                transform: scale(1.1);
+                text-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+            }
+        }
+    </style>
+</head>
+<body class="bg-white text-gray-900 min-h-screen flex flex-col">
+    <!-- 防止缩放 -->
+    <script>
+        window.addEventListener("wheel", (e)=> {
+            const isPinching = e.ctrlKey
+            if(isPinching) e.preventDefault()
+        }, { passive: false })
+    </script>
+    
+    <!-- 导航栏 -->
+    <header class="border-b border-gray-200">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold">反关财经</h1>
+                    <span class="ml-2 text-sm text-gray-500 font-medium italic">by 不霁何虹</span>
+                </div>
+                <span class="text-sm text-gray-500 px-2 py-1 border border-gray-200 rounded-md">专业加密资产分析</span>
+            </div>
+            
+            <!-- 右侧社交媒体图标和链接 -->
+            <div class="flex items-center space-x-4">
+                <!-- 
+                    量化简介和算法教程链接
+                    请根据需要修改以下链接指向实际的页面：
+                    - 量化简介: https://www.bilibili.com/video/BV19V9qYTE4G/?vd_source=41c6120442315961ee3af89fa3459874
+                    - 算法教程: https://www.bilibili.com/video/BV19V9qYTE4G/?vd_source=41c6120442315961ee3af89fa3459874
+                -->
+                <div class="hidden md:flex items-center space-x-4 mr-2">
+                    <a href="https://www.bilibili.com/video/BV19V9qYTE4G/?vd_source=41c6120442315961ee3af89fa3459874" class="text-gray-700 hover:text-blue-600 transition-colors duration-300 flex items-center font-medium">
+                        <i class="fas fa-chart-line mr-1"></i> 量化简介
+                    </a>
+                    <a href="https://www.bilibili.com/video/BV19V9qYTE4G/?vd_source=41c6120442315961ee3af89fa3459874" class="text-gray-700 hover:text-blue-600 transition-colors duration-300 flex items-center font-medium">
+                        <i class="fas fa-code mr-1"></i> 算法教程
+                    </a>
+                </div>
+                
+                <!-- 社交媒体图标和链接 -->
+                <div class="flex items-center space-x-3">
+                    <!-- 哔哩哔哩 -->
+                    <a href="https://space.bilibili.com/36229149" target="_blank" title="哔哩哔哩" class="social-icon bilibili-icon text-gray-600">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M17.813 4.653h.854c1.51.054 2.769.578 3.773 1.574 1.004.995 1.524 2.249 1.56 3.76v7.36c-.036 1.51-.556 2.769-1.56 3.773s-2.262 1.524-3.773 1.56H5.333c-1.51-.036-2.769-.556-3.773-1.56S.036 18.858 0 17.347v-7.36c.036-1.511.556-2.765 1.56-3.76 1.004-.996 2.262-1.52 3.773-1.574h.774l-1.174-1.12a1.234 1.234 0 0 1-.373-.906c0-.356.124-.658.373-.907l.027-.027c.267-.249.573-.373.92-.373.347 0 .653.124.92.373L9.653 4.44c.071.071.134.142.187.213h4.267a.836.836 0 0 1 .16-.213l2.853-2.747c.267-.249.573-.373.92-.373.347 0 .662.151.929.4.267.249.391.551.391.907 0 .355-.124.657-.373.906L17.813 4.653zM5.333 7.24c-.746.018-1.373.276-1.88.773-.506.498-.769 1.13-.786 1.894v7.52c.017.764.28 1.395.786 1.893.507.498 1.134.756 1.88.773h13.334c.746-.017 1.373-.275 1.88-.773.506-.498.769-1.129.786-1.893v-7.52c-.017-.765-.28-1.396-.786-1.894-.507-.497-1.134-.755-1.88-.773H5.333zM8 11.107c.373 0 .684.124.933.373.25.249.383.569.4.96v1.173c-.017.391-.15.711-.4.96-.249.25-.56.374-.933.374s-.684-.125-.933-.374c-.25-.249-.383-.569-.4-.96V12.44c.017-.391.15-.711.4-.96.249-.249.56-.373.933-.373zm8 0c.373 0 .684.124.933.373.25.249.383.569.4.96v1.173c-.017.391-.15.711-.4.96-.249.25-.56.374-.933.374s-.684-.125-.933-.374c-.25-.249-.383-.569-.4-.96V12.44c.017-.391.15-.711.4-.96.249-.249.56-.373.933-.373z" />
+                        </svg>
+                    </a>
+                    
+                    <!-- X/推特 -->
+                    <a href="https://x.com/Crypto_Hdy" target="_blank" title="推特" class="social-icon twitter-icon text-gray-600">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                        </svg>
+                    </a>
+                    
+                    <!-- 油管/YouTube -->
+                    <a href="https://www.youtube.com/@fanguancaijing" target="_blank" title="YouTube" class="social-icon youtube-icon text-gray-600">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                        </svg>
+                    </a>
+                    
+                    <!-- 抖音 -->
+                    <a href="https://www.douyin.com/user/YOUR_ACCOUNT" target="_blank" title="抖音" class="social-icon douyin-icon text-gray-600">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z" />
+                        </svg>
+                    </a>
+                    
+                    <!-- 快手 -->
+                    <a href="https://www.kuaishou.com/profile/YOUR_ACCOUNT" target="_blank" title="快手" class="social-icon kuaishou-icon text-gray-600">
+                        <svg class="w-5 h-5" viewBox="0 0 1024 1024" fill="currentColor">
+                            <path d="M512 0C229.376 0 0 229.376 0 512s229.376 512 512 512 512-229.376 512-512S794.624 0 512 0zm209.526 699.583c-20.77 15.976-44.3 27.517-70.046 34.523-42.948 11.443-88.013 8.99-131.256-2.05.147-61.338.295-122.676.443-184.013 69.164.494 138.328.988 207.492 1.482 1.383-25.321 0-51.132-4.69-75.869-65.8-.494-131.748-.988-197.548-1.482V301.167c-31.975.494-63.947.988-95.92 1.482-3.558 56.648-1.433 113.539-1.923 170.285-66.391-.494-132.93-.988-199.321-1.482-.443 26.603.295 53.35 2.51 79.807 65.8.494 131.748.988 197.548 1.482.494 65.8.988 131.6 1.482 197.548 23.838 1.826 47.766 2.906 71.703 3.104 32.025-.147 63.947-3.06 95.33-9.38 41.514-10.307 80.514-32.617 109.155-66.292 24.775-28.849 40.85-66.39 41.979-104.807 1.45-49.995-9.972-101.232-42.063-140.855-30.69-38.374-78.357-59.996-127.157-61.824-1.826-.051-5.431-.147-7.257-.197-2.463 25.025 4.641 50.638 20.421 70.786 14.15-1.285 28.9.641 41.86 7.7 25.518 13.681 40.9 40.948 47.077 69.207 7.748 35.31 1.137 74.996-20.819 102.316z" />
+                        </svg>
+                    </a>
+                    
+                    <!-- 微博 -->
+                    <a href="https://weibo.com/YOUR_ACCOUNT" target="_blank" title="微博" class="social-icon weibo-icon text-gray-600">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M10.098 20.323c-3.977.391-7.414-1.406-7.672-4.02-.259-2.609 2.759-5.047 6.74-5.441 3.979-.394 7.413 1.404 7.671 4.018.259 2.6-2.759 5.049-6.737 5.439l-.002.004zM9.05 17.219c-.384.616-1.208.884-1.829.602-.612-.279-.793-.991-.406-1.593.379-.595 1.176-.861 1.793-.601.622.263.82.972.442 1.592zm1.27-1.627c-.141.237-.449.353-.689.253-.236-.09-.313-.361-.177-.586.138-.227.436-.346.672-.24.239.09.315.36.18.601l.014-.028zm.176-2.719c-1.893-.493-4.033.45-4.857 2.118-.836 1.704-.026 3.591 1.886 4.21 1.983.64 4.318-.341 5.132-2.179.8-1.793-.201-3.642-2.161-4.149zm7.563-1.224c-.346-.105-.57-.18-.405-.615.375-.977.42-1.804 0-2.404-.781-1.112-2.915-1.053-5.364-.03 0 0-.766.331-.571-.271.376-1.217.315-2.224-.27-2.809-1.338-1.337-4.869.045-7.888 3.08C1.309 10.87 0 13.273 0 15.348c0 3.981 5.099 6.395 10.086 6.395 6.536 0 10.888-3.801 10.888-6.82 0-1.822-1.547-2.854-2.915-3.284v.01zm1.908-5.092c-.766-.856-1.908-1.187-2.96-.962-.436.09-.706.511-.616.932.09.42.511.691.932.602.511-.105 1.067.044 1.442.465.376.421.466.977.316 1.473-.136.406.09.841.496.976.405.136.84-.09.976-.496.33-1.022.12-2.178-.646-3.035l.06.045zm2.418-2.195c-1.576-1.757-3.905-2.419-6.054-1.968-.496.104-.812.587-.706 1.083.104.496.586.811 1.082.707 1.532-.331 3.185.15 4.296 1.383.857.976 1.187 2.318.781 3.524-.136.526.18 1.052.706 1.188.526.135 1.052-.18 1.188-.706.614-1.892.15-4.026-1.398-5.25l.105.045z"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主内容 -->
+    <main class="flex-grow container mx-auto px-4 py-8">
+        <!-- 币种信息和所属板块移到最上面 -->
+        <section class="mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center">
+                        <img src="Scroll.svg" alt="Scroll Logo" class="h-12 w-12 mr-3">
+                        <div>
+                            <h2 class="text-3xl font-bold flex items-center">Scroll (SCR)</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 所属板块 - 更小的简洁版本 -->
+            <div class="mb-4 mt-2 text-sm">
+                <div class="flex items-center space-x-2">
+                    <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-medium tag-animate">Layer 2</span>
+                    <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full font-medium tag-animate">以太坊扩容</span>
+                    <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full font-medium tag-animate">zkEVM</span>
+                </div>
+                <p class="mt-3 text-gray-600">Scroll 是一个基于 zkEVM 技术的以太坊 Layer 2 扩容解决方案，通过零知识证明技术实现高性能、低成本的以太坊交易，同时保持与以太坊虚拟机的完全兼容性。</p>
+            </div>
+        </section>
+
+        <!-- 投资背景 -->
+        <section class="mb-8">
+            <div class="bg-white p-6 rounded-lg shadow-sm space-y-6">
+                <h3 class="text-xl font-bold mb-4 flex items-center">
+                    <i class="fas fa-chart-line text-blue-600 mr-2"></i>投资背景
+                </h3>
+                
+                <!-- 总体融资情况 -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                    <div class="bg-gradient-to-r from-blue-50 to-blue-100 p-4 rounded-lg text-center">
+                        <p class="text-sm text-gray-600 mb-1">总融资额</p>
+                        <p class="text-xl font-bold text-blue-600">$8000万</p>
+                    </div>
+                    <div class="bg-gradient-to-r from-purple-50 to-purple-100 p-4 rounded-lg text-center">
+                        <p class="text-sm text-gray-600 mb-1">最新估值</p>
+                        <p class="text-xl font-bold text-purple-600">$18亿</p>
+                    </div>
+                    <div class="bg-gradient-to-r from-green-50 to-green-100 p-4 rounded-lg text-center">
+                        <p class="text-sm text-gray-600 mb-1">总代币供应量</p>
+                        <p class="text-xl font-bold text-green-600">10亿 SCR</p>
+                    </div>
+                    <div class="bg-gradient-to-r from-orange-50 to-orange-100 p-4 rounded-lg text-center">
+                        <p class="text-sm text-gray-600 mb-1">已解锁流通</p>
+                        <p class="text-xl font-bold text-orange-600">1.9亿 SCR</p>
+                    </div>
+                </div>
+
+                <!-- 融资历史 -->
+                <div class="space-y-4">
+                    <h4 class="text-lg font-semibold flex items-center">
+                        <i class="fas fa-history text-gray-600 mr-2"></i>融资历史
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-blue-50 p-4 rounded-lg border border-blue-100">
+                            <div class="flex justify-between items-center mb-3">
+                                <div>
+                                    <span class="font-semibold text-lg">Series A 轮</span>
+                                    <p class="text-sm text-gray-600">2022年4月21日</p>
+                                </div>
+                                <span class="text-blue-600 font-bold text-lg">$3000万</span>
+                            </div>
+                            <p class="text-sm text-gray-600 mb-2">主要投资者：</p>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm">Polychain Capital (领投)</span>
+                                <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm">Bain Capital Crypto</span>
+                                <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm">Robot Ventures</span>
+                                <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm">Santiago R. Santos</span>
+                                <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm">Anthony Sassano</span>
+                                <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm">Carlos Aria</span>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-purple-50 p-4 rounded-lg border border-purple-100">
+                            <div class="flex justify-between items-center mb-3">
+                                <div>
+                                    <span class="font-semibold text-lg">未披露轮次</span>
+                                    <p class="text-sm text-gray-600">2023年3月6日</p>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-purple-600 font-bold text-lg">$5000万</span>
+                                    <p class="text-sm text-gray-600">估值：$18亿</p>
+                                </div>
+                            </div>
+                            <p class="text-sm text-gray-600 mb-2">主要投资者：</p>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-2 py-1 bg-purple-100 text-purple-800 rounded text-sm">Polychain Capital</span>
+                                <span class="px-2 py-1 bg-purple-100 text-purple-800 rounded text-sm">IOSG Ventures</span>
+                                <span class="px-2 py-1 bg-purple-100 text-purple-800 rounded text-sm">Bain Capital Crypto</span>
+                                <span class="px-2 py-1 bg-purple-100 text-purple-800 rounded text-sm">Variant</span>
+                                <span class="px-2 py-1 bg-purple-100 text-purple-800 rounded text-sm">HongShan (原红杉中国)</span>
+                                <span class="px-2 py-1 bg-purple-100 text-purple-800 rounded text-sm">Newman Capital</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 投资机构层级 -->
+                <div class="space-y-4">
+                    <h4 class="text-lg font-semibold flex items-center">
+                        <i class="fas fa-layer-group text-gray-600 mr-2"></i>投资机构层级
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-lg border border-blue-100">
+                            <h5 class="font-medium text-blue-800 mb-3">一线投资机构 (Tier 1)</h5>
+                            <div class="flex flex-wrap gap-2">
+                                <a href="https://polychain.capital" target="_blank" class="group px-3 py-1.5 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-full text-sm font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg flex items-center">
+                                    <span>Polychain Capital</span>
+                                    <span class="ml-1 opacity-0 group-hover:opacity-100">↗</span>
+                                </a>
+                                <a href="https://twitter.com/santiagoroel" target="_blank" class="group px-3 py-1.5 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-full text-sm font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg flex items-center">
+                                    <span>Santiago R. Santos</span>
+                                    <span class="ml-1 opacity-0 group-hover:opacity-100">↗</span>
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gradient-to-br from-purple-50 to-pink-50 p-4 rounded-lg border border-purple-100">
+                            <h5 class="font-medium text-purple-800 mb-3">二线投资机构 (Tier 2)</h5>
+                            <div class="flex flex-wrap gap-2">
+                                <a href="https://robot.ventures" target="_blank" class="group px-3 py-1.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full text-sm font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg flex items-center">
+                                    <span>Robot Ventures</span>
+                                    <span class="ml-1 opacity-0 group-hover:opacity-100">↗</span>
+                                </a>
+                                <a href="https://iosg.vc" target="_blank" class="group px-3 py-1.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full text-sm font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg flex items-center">
+                                    <span>IOSG Ventures</span>
+                                    <span class="ml-1 opacity-0 group-hover:opacity-100">↗</span>
+                                </a>
+                                <a href="https://variant.fund" target="_blank" class="group px-3 py-1.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full text-sm font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg flex items-center">
+                                    <span>Variant</span>
+                                    <span class="ml-1 opacity-0 group-hover:opacity-100">↗</span>
+                                </a>
+                                <a href="https://www.baincapital.com/cryptocurrency" target="_blank" class="group px-3 py-1.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full text-sm font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg flex items-center">
+                                    <span>Bain Capital Crypto</span>
+                                    <span class="ml-1 opacity-0 group-hover:opacity-100">↗</span>
+                                </a>
+                                <a href="https://www.hongshan.com" target="_blank" class="group px-3 py-1.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full text-sm font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg flex items-center">
+                                    <span>HongShan</span>
+                                    <span class="ml-1 opacity-0 group-hover:opacity-100">↗</span>
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gradient-to-br from-emerald-50 to-teal-50 p-4 rounded-lg border border-emerald-100">
+                            <h5 class="font-medium text-emerald-800 mb-3">其他投资机构 (Tier 4)</h5>
+                            <div class="flex flex-wrap gap-2">
+                                <a href="https://newman.capital" target="_blank" class="group px-3 py-1.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-full text-sm font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg flex items-center">
+                                    <span>Newman Capital</span>
+                                    <span class="ml-1 opacity-0 group-hover:opacity-100">↗</span>
+                                </a>
+                                <a href="https://www.tpc.com" target="_blank" class="group px-3 py-1.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-full text-sm font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg flex items-center">
+                                    <span>TPC</span>
+                                    <span class="ml-1 opacity-0 group-hover:opacity-100">↗</span>
+                                </a>
+                                <a href="https://www.qimingvc.com" target="_blank" class="group px-3 py-1.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-full text-sm font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg flex items-center">
+                                    <span>Qiming Venture Partners</span>
+                                    <span class="ml-1 opacity-0 group-hover:opacity-100">↗</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 代币分发活动 -->
+                <div class="space-y-4">
+                    <h4 class="text-lg font-semibold flex items-center">
+                        <i class="fas fa-gift text-gray-600 mr-2"></i>代币分发活动
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="flex items-center justify-between bg-orange-50 p-4 rounded-lg border border-orange-100">
+                            <div>
+                                <span class="font-medium text-lg">Binance Launchpool</span>
+                                <p class="text-sm text-gray-600">分发数量：5500万 SCR</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-orange-600 font-bold text-lg">5.50%</span>
+                                <p class="text-sm text-gray-600">占总供应量</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between bg-orange-50 p-4 rounded-lg border border-orange-100">
+                            <div>
+                                <span class="font-medium text-lg">Gate.io Startup</span>
+                                <p class="text-sm text-gray-600">分发数量：1.4万 SCR</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-orange-600 font-bold text-lg">0.001%</span>
+                                <p class="text-sm text-gray-600">占总供应量</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 前景展望 - 移除遮挡效果 -->
+        <section class="mb-10 border border-indigo-200 rounded-lg p-6 bg-gradient-to-r from-indigo-50 to-white shadow-sm animate-fade-in">
+            <h3 class="text-xl font-bold mb-4 flex items-center">
+                <i class="fas fa-binoculars text-indigo-600 mr-2"></i> 前景展望与投资建议
+            </h3>
+            <div class="text-gray-800 space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="p-4 border border-indigo-200 rounded-lg relative">
+                        <h5 class="font-semibold text-center mb-2 flex items-center justify-center">
+                            <i class="fas fa-calendar-day text-indigo-500 mr-2"></i>短期展望 (3-6月)
+                        </h5>
+                        <ul class="text-sm space-y-2">
+                            <li class="flex items-start"><i class="fas fa-circle-check text-indigo-500 mr-2 mt-0.5"></i> V3版本功能增强和跨链扩张</li>
+                            <li class="flex items-start"><i class="fas fa-circle-check text-indigo-500 mr-2 mt-0.5"></i> 机构用户采用率持续提升</li>
+                        </ul>
+                        <div class="price-recommendation mt-3 p-2 bg-indigo-100 rounded">
+                            <div class="price-content">
+                                <span class="font-semibold text-sm">当前价格区间:</span>
+                                <div class="mt-1 flex justify-between">
+                                    <span class="text-red-600 font-bold text-sm">$0.24</span>
+                                    <span class="text-green-600 font-bold text-sm">$0.35</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="p-4 border border-indigo-200 rounded-lg relative">
+                        <h5 class="font-semibold text-center mb-2 flex items-center justify-center">
+                            <i class="fas fa-calendar-week text-indigo-500 mr-2"></i>中期前景 (6-18月)
+                        </h5>
+                        <ul class="text-sm space-y-2">
+                            <li class="flex items-start"><i class="fas fa-circle-check text-indigo-500 mr-2 mt-0.5"></i> 安全模块扩展和去中心化治理强化</li>
+                            <li class="flex items-start"><i class="fas fa-circle-check text-indigo-500 mr-2 mt-0.5"></i> 新型借贷市场和资产类别整合</li>
+                        </ul>
+                        <div class="price-recommendation mt-3 p-2 bg-indigo-100 rounded">
+                            <div class="price-content">
+                                <span class="font-semibold text-sm">历史高点区间:</span>
+                                <div class="mt-1 flex justify-between">
+                                    <span class="text-red-600 font-bold text-sm">$0.35</span>
+                                    <span class="text-green-600 font-bold text-sm">$1.44</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="p-4 border border-indigo-200 rounded-lg relative">
+                        <h5 class="font-semibold text-center mb-2 flex items-center justify-center">
+                            <i class="fas fa-calendar-alt text-indigo-500 mr-2"></i>长期展望 (2-5年)
+                        </h5>
+                        <ul class="text-sm space-y-2">
+                            <li class="flex items-start"><i class="fas fa-circle-check text-indigo-500 mr-2 mt-0.5"></i> 实物资产上链和机构级解决方案</li>
+                            <li class="flex items-start"><i class="fas fa-circle-check text-indigo-500 mr-2 mt-0.5"></i> 传统金融与DeFi借贷市场整合</li>
+                        </ul>
+                        <div class="price-recommendation mt-3 p-2 bg-indigo-100 rounded">
+                            <div class="price-content">
+                                <span class="font-semibold text-sm">市值预期:</span>
+                                <div class="mt-1 flex justify-between items-center">
+                                    <span class="text-gray-600 text-xs">当前: $49.66M</span>
+                                    <span class="text-green-600 font-bold text-sm">目标: $500M-1B</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-6 p-4 border border-indigo-200 rounded-lg bg-white">
+                    <h5 class="font-semibold flex items-center">
+                        <i class="fas fa-lightbulb text-yellow-500 mr-2"></i>核心观点
+                    </h5>
+                    <p class="mt-2">Scroll作为DeFi领域的领先借贷协议，已发展为去中心化金融的核心基础设施。其长期价值建立在创新的风险管理、多链部署和去中心化治理等方面。随着加密资产向主流金融市场扩张，Scroll有望成为连接DeFi与传统金融的桥梁。</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 评级信息 -->
+        <section class="mb-10">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- 潜力评级 -->
+                <div class="border border-gray-200 rounded-lg p-6 bg-white shadow-sm crypto-card">
+                    <h3 class="text-xl font-bold mb-4 flex items-center">
+                        <i class="fas fa-rocket text-green-600 mr-2"></i>
+                        潜力评级
+                    </h3>
+                    <div class="mb-2 flex justify-between">
+                        <span class="font-medium">78%</span>
+                        <span class="text-green-600 font-bold flex items-center">
+                            <i class="fas fa-shield-alt mr-1"></i>
+                            推荐
+                            <span class="recommendation-badge ml-2 px-2 py-0.5 bg-green-100 text-green-700 rounded-md text-xs font-bold animate-strong-pulse">建议买入</span>
+                        </span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2.5 rating-bar-container">
+                        <div class="bg-green-600 h-2.5 rounded-full animate-pulse rating-bar" style="width: 78%">
+                            <div class="rating-glow absolute h-full w-4 bg-white opacity-30"></div>
+                        </div>
+                    </div>
+                    <ul class="mt-4 text-sm space-y-2">
+                        <li class="flex items-center rating-item"><span class="w-3 h-3 inline-block bg-green-600 rounded-full mr-2"></span> DeFi借贷市场领导地位</li>
+                        <li class="flex items-center rating-item"><span class="w-3 h-3 inline-block bg-green-600 rounded-full mr-2"></span> 创新的风险管理和流动性优化</li>
+                        <li class="flex items-center rating-item"><span class="w-3 h-3 inline-block bg-green-600 rounded-full mr-2"></span> 多链部署与机构采用增长</li>
+                    </ul>
+                </div>
+                
+                <!-- 风险评级 -->
+                <div class="border border-gray-200 rounded-lg p-6 bg-white shadow-sm crypto-card">
+                    <h3 class="text-xl font-bold mb-4 flex items-center">
+                        <i class="fas fa-triangle-exclamation text-yellow-600 mr-2"></i>
+                        风险评级
+                    </h3>
+                    <div class="mb-2 flex justify-between">
+                        <span class="font-medium">62%</span>
+                        <span class="text-red-600 font-bold flex items-center">
+                            <i class="fas fa-exclamation-circle mr-1"></i>
+                            中高风险
+                            <span class="risk-badge ml-2 px-2 py-0.5 bg-red-100 text-red-700 rounded-md text-xs font-bold animate-risk-pulse">谨慎投资</span>
+                        </span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2.5 rating-bar-container">
+                        <div class="bg-red-600 h-2.5 rounded-full animate-pulse rating-bar" style="width: 62%">
+                            <div class="rating-glow absolute h-full w-4 bg-white opacity-30"></div>
+                        </div>
+                    </div>
+                    <ul class="mt-4 text-sm space-y-2">
+                        <li class="flex items-center rating-item"><span class="w-3 h-3 inline-block bg-red-600 rounded-full mr-2"></span> 智能合约风险与安全挑战</li>
+                        <li class="flex items-center rating-item"><span class="w-3 h-3 inline-block bg-red-600 rounded-full mr-2"></span> 行业竞争加剧与创新压力</li>
+                        <li class="flex items-center rating-item"><span class="w-3 h-3 inline-block bg-red-600 rounded-full mr-2"></span> 监管不确定性增加</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 宏观分析 -->
+        <div class="mb-8">
+            <div class="border border-gray-200 rounded-lg p-6 bg-white shadow-sm">
+                <h4 class="text-xl font-semibold mb-4 flex items-center">
+                    <i class="fas fa-globe text-blue-500 mr-2"></i>宏观分析
+                </h4>
+                <div class="text-gray-800 space-y-4">
+                    <p>Scroll 的宏观投资逻辑建立在以太坊扩容需求和 Layer 2 技术创新的基础上。随着以太坊生态系统的持续发展，高性能、低成本的扩容解决方案需求将持续增长。</p>
+                    
+                    <h5 class="font-semibold">技术优势</h5>
+                    <p>Scroll 采用最新的 zkEVM 技术，在保持以太坊兼容性的同时实现了高性能扩容。其独特的技术架构和验证机制为用户提供了安全、高效的交易体验。</p>
+                    
+                    <h5 class="font-semibold">生态系统发展</h5>
+                    <p>作为完全兼容以太坊的 Layer 2 解决方案，Scroll 正在吸引越来越多的开发者和项目入驻。强大的开发者工具和完善的基础设施支持，为生态系统的持续扩张提供了坚实基础。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 经济模型分析 -->
+        <div class="mb-8">
+            <div class="border border-gray-200 rounded-lg p-6 bg-white shadow-sm">
+                <h4 class="text-xl font-semibold mb-4 flex items-center">
+                    <i class="fas fa-coins text-blue-500 mr-2"></i>经济模型分析
+                </h4>
+                <div class="text-gray-800 space-y-4">
+                    <p>Scroll 的经济模型设计注重长期可持续性和生态系统激励平衡。</p>
+                    
+                    <h5 class="font-semibold">代币分配</h5>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
+                        <div class="p-4 bg-gray-50 rounded-lg">
+                            <h6 class="font-medium mb-4">初始分配</h6>
+                            <div class="relative mx-auto" style="height: 220px; max-width: 220px;">
+                                <canvas id="tokenAllocationChart"></canvas>
+                            </div>
+                            <ul class="space-y-2 text-sm mt-4">
+                                <li class="flex items-center">
+                                    <span class="w-3 h-3 bg-blue-500 rounded-full mr-2"></span>
+                                    生态系统发展: 35% (3.5亿 SCR)
+                                </li>
+                                <li class="flex items-center">
+                                    <span class="w-3 h-3 bg-purple-500 rounded-full mr-2"></span>
+                                    核心贡献者: 23% (2.3亿 SCR)
+                                </li>
+                                <li class="flex items-center">
+                                    <span class="w-3 h-3 bg-green-500 rounded-full mr-2"></span>
+                                    投资者: 17% (1.7亿 SCR)
+                                </li>
+                                <li class="flex items-center">
+                                    <span class="w-3 h-3 bg-yellow-500 rounded-full mr-2"></span>
+                                    空投: 15% (1.5亿 SCR)
+                                </li>
+                                <li class="flex items-center">
+                                    <span class="w-3 h-3 bg-red-500 rounded-full mr-2"></span>
+                                    基金会储备: 10% (1亿 SCR)
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="p-4 bg-gray-50 rounded-lg">
+                            <h6 class="font-medium mb-4">解锁进度</h6>
+                            <div class="relative mx-auto" style="height: 220px; max-width: 220px;">
+                                <canvas id="unlockProgressChart"></canvas>
+                            </div>
+                            <ul class="space-y-2 text-sm mt-4">
+                                <li class="flex items-center">
+                                    <span class="w-3 h-3 bg-green-500 rounded-full mr-2"></span>
+                                    已解锁: 19% (1.9亿 SCR)
+                                </li>
+                                <li class="flex items-center">
+                                    <span class="w-3 h-3 bg-red-500 rounded-full mr-2"></span>
+                                    锁定中: 73% (7.3亿 SCR)
+                                </li>
+                                <li class="flex items-center">
+                                    <span class="w-3 h-3 bg-gray-500 rounded-full mr-2"></span>
+                                    未追踪: 8% (0.8亿 SCR)
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <h5 class="font-semibold mt-8">解锁时间表</h5>
+                    <div class="bg-gray-50 p-4 rounded-lg my-4">
+                        <ul class="space-y-3">
+                            <li class="flex items-center">
+                                <i class="fas fa-calendar text-blue-500 mr-2"></i>
+                                <span>空投部分 (7000万 SCR): TGE时 100% 解锁</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-calendar text-blue-500 mr-2"></i>
+                                <span>基金会储备 (1亿 SCR): TGE时解锁 20%，剩余48个月线性解锁</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-calendar text-blue-500 mr-2"></i>
+                                <span>投资者份额 (1.7亿 SCR): 1年锁定期后36个月线性解锁</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-calendar text-blue-500 mr-2"></i>
+                                <span>生态系统发展 (3.5亿 SCR): TGE时解锁 28.57%，剩余48个月线性解锁</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-calendar text-blue-500 mr-2"></i>
+                                <span>核心贡献者 (2.3亿 SCR): 1年锁定期后36个月线性解锁</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <h5 class="font-semibold">收费机制</h5>
+                    <p>Scroll 采用双层收费结构：</p>
+                    <ul class="list-disc pl-5 space-y-2 my-2">
+                        <li>L2 交易费用：用户支付 gas 费用，用于支付验证者和网络运营成本</li>
+                        <li>L1 数据发布费用：将交易数据发布到以太坊主网的成本</li>
+                        <li>验证者质押奖励：质押 SCR 的验证者可获得网络手续费分成</li>
+                    </ul>
+
+                    <h5 class="font-semibold">通缩机制</h5>
+                    <div class="bg-blue-50 p-4 rounded-lg my-4">
+                        <ul class="space-y-2">
+                            <li class="flex items-center">
+                                <i class="fas fa-fire text-blue-500 mr-2"></i>
+                                交易费用的 70% 用于回购并销毁 SCR
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-chart-line text-blue-500 mr-2"></i>
+                                网络使用率增长带来更多代币销毁
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-balance-scale text-blue-500 mr-2"></i>
+                                通缩机制有助于平衡代币供需关系
+                            </li>
+                        </ul>
+                    </div>
+
+                    <h5 class="font-semibold">治理参与</h5>
+                    <p>SCR 代币持有者可以：</p>
+                    <ul class="list-disc pl-5 space-y-2 my-2">
+                        <li>参与网络参数调整投票</li>
+                        <li>提议和投票决定协议升级</li>
+                        <li>参与生态系统基金的使用决策</li>
+                    </ul>
+                </div>
+                </div>
+            </div>
+            
+            <!-- 微观分析 -->
+        <div class="mb-8">
+            <div class="border border-gray-200 rounded-lg p-6 bg-white shadow-sm">
+                <h4 class="text-xl font-semibold mb-4 flex items-center">
+                    <i class="fas fa-microscope text-blue-500 mr-2"></i>微观分析
+                </h4>
+                <div class="text-gray-800 space-y-4">
+                    <p>从微观层面看，Scroll 的网络活动和技术创新持续增长。</p>
+                    
+                    <h5 class="font-semibold">网络数据指标</h5>
+                    <p>Scroll 当前日交易量超过 100 万笔，总锁仓价值(TVL)约为 5 亿美元。网络性能表现优异，平均交易确认时间小于 1 分钟，交易成本仅为以太坊主网的约 1/10。</p>
+                    
+                    <h5 class="font-semibold">技术创新</h5>
+                    <p>Scroll 团队持续推进技术创新，包括优化 zkEVM 性能、改进证明生成效率，以及开发更强大的开发者工具。这些创新进一步巩固了其在 Layer 2 领域的技术领先地位。</p>
+                    
+                    <h5 class="font-semibold">生态系统活跃度</h5>
+                    <p>Scroll 生态系统正在快速扩张，已有超过 100 个 DApp 项目部署。活跃开发者数量持续增长，社区参与度高，为网络的长期发展奠定了良好基础。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 风险提示 -->
+        <div class="mb-8">
+            <div class="border border-red-200 rounded-lg p-6 bg-red-50">
+                <h4 class="text-xl font-semibold mb-4 flex items-center text-red-700">
+                    <i class="fas fa-triangle-exclamation text-red-500 mr-2"></i>风险提示
+                </h4>
+                <div class="text-red-700 space-y-4">
+                    <p class="font-medium">投资加密资产具有高风险，请注意以下风险点：</p>
+                    <ul class="list-disc pl-5 space-y-2">
+                        <li>Layer 2 技术仍在发展中，可能存在技术风险和安全隐患</li>
+                        <li>加密货币市场波动剧烈，价格可能出现大幅波动</li>
+                        <li>监管政策变化可能影响项目发展和代币价值</li>
+                        <li>跨链桥和智能合约可能存在漏洞风险</li>
+                        <li>请勿投资超过自己可承受损失的资金</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 免责声明 -->
+        <div class="text-sm text-gray-500 mb-8">
+            <p>免责声明：本文内容不构成任何投资建议，仅供参考。加密货币投资有风险，入市需谨慎。</p>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-gray-50 border-t border-gray-200 py-8">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <p class="text-gray-600">&copy; 2024 反关财经. All rights reserved.</p>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="#" class="text-gray-600 hover:text-blue-600">关于我们</a>
+                    <a href="#" class="text-gray-600 hover:text-blue-600">使用条款</a>
+                    <a href="#" class="text-gray-600 hover:text-blue-600">隐私政策</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 提示消息 -->
+    <div id="followMessage" class="follow-message">关注我们，加入会员<span class="highlight">发大财</span>！</div>
+
+    <script src="script.js"></script>
+    
+    <!-- 掉落Aave代币效果脚本 -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取所有社交媒体图标和教程链接
+            const socialIcons = document.querySelectorAll('.social-icon');
+            const tutorialLinks = document.querySelectorAll('.hidden.md\\:flex a');
+            const allClickableElements = [...socialIcons, ...tutorialLinks];
+            
+            // 获取消息提示元素
+            const followMessage = document.getElementById('followMessage');
+            
+            // Aave SVG内容
+            const aaveSvg = `
+                <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="32" cy="32" r="32" fill="#B6509E"/>
+                    <path d="M47.5382 39.9911L38.7114 23.7399C38.2429 22.9026 37.3619 22.3885 36.4046 22.3885C35.4474 22.3885 34.5663 22.9025 34.0978 23.7399L31.8293 28.3786L28.6664 21.9829C28.1979 21.1455 27.3168 20.6314 26.3596 20.6314C25.4024 20.6314 24.5213 21.1454 24.0528 21.9829L15.226 38.234C14.7242 39.1246 14.908 40.2292 15.6561 40.9261C16.0333 41.2809 16.5049 41.4583 16.9843 41.4583C17.349 41.4583 17.7138 41.359 18.0425 41.1602L21.7472 39.1073C21.7485 39.1067 21.7497 39.1061 21.751 39.1054C22.1156 38.8858 22.5348 38.5062 22.8728 37.8914L26.3596 30.9718L29.8464 37.8914C30.3149 38.7288 31.1959 39.2428 32.1532 39.2428C33.1104 39.2428 33.9915 38.7289 34.46 37.8914L38.0528 30.8228L41.5478 37.7431C41.8856 38.3574 42.3045 38.7367 42.6687 38.9561C42.9975 39.1549 43.3621 39.2542 43.7268 39.2542C44.2062 39.2542 44.6779 39.0768 45.055 38.722C45.8027 38.0253 45.9867 36.9207 45.4852 36.0301L40.9925 27.5158L45.4852 38.234C45.9871 39.1246 45.8033 40.2292 45.0551 40.9261C44.6778 41.2809 44.2063 41.4583 43.7269 41.4583C43.3621 41.4583 42.9974 41.359 42.6686 41.1602L38.9645 39.1075C38.9627 39.1066 38.961 39.1057 38.9592 39.1048C38.5946 38.8852 38.1755 38.5057 37.8375 37.8914L34.46 31.1718L32.1532 35.9514L29.8464 31.1718L26.3596 38.0914C25.8912 38.9288 25.0101 39.4429 24.0529 39.4429C23.0957 39.4429 22.2146 38.9289 21.7461 38.0914L18.1533 31.0228L16.4377 36.0301C15.9359 36.9207 16.1198 38.0253 16.8679 38.7221C17.2451 39.0769 17.7167 39.2544 18.1961 39.2544C18.5608 39.2544 18.9255 39.1551 19.2543 38.9563C19.618 38.7371 20.0367 38.3581 20.3747 37.7442L21.7461 34.8685L24.0529 39.6429C25.0101 39.6429 24.5318 39.1289 24.0633 38.2914L21.8039 33.6685L23.9075 29.5158L28.4001 38.0301C28.9019 38.9207 28.7181 40.0253 27.97 40.7221C27.5927 41.0769 27.1212 41.2544 26.6417 41.2544C26.277 41.2544 25.9123 41.1551 25.5835 40.9563C25.2194 40.7367 24.8002 40.3572 24.4621 39.7428L21.8039 34.4958V34.4958L15.226 38.234C14.7242 39.1246 14.908 40.2292 15.6561 40.9261C16.0333 41.2809 16.5049 41.4583 16.9843 41.4583C17.349 41.4583 17.7138 41.359 18.0425 41.1602L26.8693 36.3229C27.2334 36.1036 27.6525 35.7241 27.9907 35.1098C28.1614 34.7976 28.4347 34.1736 28.6667 33.7143L31.8289 38.5371C32.3307 39.4277 32.1468 40.5323 31.3987 41.2291C31.0215 41.5839 30.5499 41.7614 30.0705 41.7614C29.7058 41.7614 29.3411 41.6621 29.0123 41.4633C28.6485 41.2438 28.2297 40.8648 27.8917 40.2509L26.5203 37.3752L23.0335 44.2948C22.565 45.1322 21.6839 45.6463 20.7267 45.6463C19.7695 45.6463 18.8884 45.1323 18.4199 44.2948L9.59317 28.0435C9.09128 27.1529 9.27513 26.0483 10.0232 25.3514C10.4004 24.9966 10.872 24.8192 11.3514 24.8192C11.7161 24.8192 12.0809 24.9185 12.4096 25.1173L16.1143 27.1702C16.1156 27.1709 16.1168 27.1715 16.1181 27.1721C16.4827 27.3918 16.9019 27.7713 17.2399 28.3861L20.7267 35.3057L24.2135 28.3861C24.682 27.5487 25.563 27.0347 26.5203 27.0347C27.4775 27.0347 28.3586 27.5486 28.8271 28.3861L32.4199 35.4547L36.6067 27.4334C36.9446 26.8186 37.3637 26.4394 37.728 26.2198C38.0568 26.021 38.4214 25.9217 38.7861 25.9217C39.2655 25.9217 39.7372 26.0992 40.1143 26.4539C40.862 27.1506 41.046 28.2552 40.5445 29.1458L38.7842 32.8513H38.7842L47.5382 39.9911Z" fill="white"/>
+                </svg>
+            `;
+            
+            // 创建掉落的Aave代币
+            function createFallingAave(event, clickedElement) {
+                const aave = document.createElement('div');
+                aave.className = 'falling-crypto';
+                aave.innerHTML = aaveSvg;
+                
+                // 获取点击元素的位置
+                const rect = clickedElement.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+                
+                // 将Aave代币放置在点击的图标位置
+                aave.style.left = (centerX - 20) + 'px'; // 20是Aave代币宽度的一半
+                aave.style.top = centerY + 'px';
+                
+                // 随机水平位置偏移，让硬币分散一些 - 爆炸效果
+                const offsetX = (Math.random() - 0.5) * 60; // 增大偏移范围
+                aave.style.left = `calc(${aave.style.left} + ${offsetX}px)`;
+                
+                // 随机垂直位置偏移，增强爆炸感
+                const offsetY = (Math.random() - 0.7) * 40; // 向上偏移更多
+                aave.style.top = `calc(${aave.style.top} + ${offsetY}px)`;
+                
+                // 随机大小，在点击位置的硬币稍微大一些，更有爆炸感
+                const size = Math.random() * 40 + 25; // 25-65px
+                aave.style.width = size + 'px';
+                aave.style.height = size + 'px';
+                
+                // 随机动画持续时间 (3-5秒)
+                const duration = Math.random() * 2 + 3;
+                
+                // 每个Aave代币摆动的速度和频率略有不同
+                const swayDuration = Math.random() * 1.5 + 2;
+                aave.style.animationDuration = `${duration}s, ${swayDuration}s`;
+                
+                // 随机初始旋转角度
+                const initialRotation = Math.random() * 360;
+                aave.style.transform = `rotate(${initialRotation}deg)`;
+                
+                // 随机延迟，让硬币不会同时下落
+                const delay = Math.random() * 0.5; // 缩短延迟，让爆炸效果更明显
+                aave.style.animationDelay = `${delay}s, 0s`;
+                
+                // 随机旋转方向和摆动方向
+                if (Math.random() > 0.5) {
+                    aave.style.animationDirection = 'normal, alternate';
+                } else {
+                    aave.style.animationDirection = 'normal, alternate-reverse';
+                }
+                
+                document.body.appendChild(aave);
+                
+                // 动画结束后移除元素
+                setTimeout(() => {
+                    aave.remove();
+                }, (duration + delay) * 1000);
+            }
+            
+            // 为每个元素添加点击事件
+            allClickableElements.forEach(element => {
+                element.addEventListener('click', function(e) {
+                    // 阻止默认行为，防止立即跳转
+                    e.preventDefault();
+                    
+                    // 找到被点击的元素 - 可能是a标签或其内部的svg/path等
+                    const clickedElement = e.currentTarget;
+                    
+                    // 创建随机数量的Aave代币
+                    const aaveCount = Math.floor(Math.random() * 8) + 12; // 12-19个Aave代币
+                    
+                    for (let i = 0; i < aaveCount; i++) {
+                        createFallingAave(e, clickedElement);
+                    }
+                    
+                    // 显示消息
+                    followMessage.classList.add('show');
+                    
+                    // 5秒后隐藏消息，与动画持续时间相匹配
+                    setTimeout(() => {
+                        followMessage.classList.remove('show');
+                    }, 5000);
+                    
+                    // 延迟后跳转到原链接
+                    const href = this.getAttribute('href');
+                    if (href && href !== '#') {
+                        setTimeout(() => {
+                            window.open(href, '_blank');
+                        }, 1500);
+                    }
+                });
+            });
+        });
+    </script>
+
+    <!-- 在 </body> 标签前添加 Chart.js 库和初始化脚本 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // 通用配置
+        const commonOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            radius: '85%',  // 调整饼图大小
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    padding: 10,
+                    cornerRadius: 8,
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    titleFont: {
+                        size: 13
+                    },
+                    bodyFont: {
+                        size: 12
+                    }
+                }
+            },
+            elements: {
+                arc: {
+                    borderWidth: 1,
+                    borderColor: 'rgba(255, 255, 255, 0.8)',
+                    borderRadius: 4 // 添加圆角
+                }
+            },
+            animation: {
+                animateRotate: true,
+                animateScale: true
+            }
+        };
+
+        // 代币分配饼图
+        const tokenAllocationCtx = document.getElementById('tokenAllocationChart').getContext('2d');
+        new Chart(tokenAllocationCtx, {
+            type: 'pie',
+            data: {
+                labels: ['生态系统发展', '核心贡献者', '投资者', '空投', '基金会储备'],
+                datasets: [{
+                    data: [35, 23, 17, 15, 10],
+                    backgroundColor: [
+                        'rgba(59, 130, 246, 0.85)', // blue-500 with opacity
+                        'rgba(168, 85, 247, 0.85)', // purple-500 with opacity
+                        'rgba(34, 197, 94, 0.85)',  // green-500 with opacity
+                        'rgba(234, 179, 8, 0.85)',  // yellow-500 with opacity
+                        'rgba(239, 68, 68, 0.85)'   // red-500 with opacity
+                    ],
+                    hoverBackgroundColor: [
+                        'rgb(59, 130, 246)',
+                        'rgb(168, 85, 247)',
+                        'rgb(34, 197, 94)',
+                        'rgb(234, 179, 8)',
+                        'rgb(239, 68, 68)'
+                    ]
+                }]
+            },
+            options: {
+                ...commonOptions,
+                plugins: {
+                    ...commonOptions.plugins,
+                    tooltip: {
+                        ...commonOptions.plugins.tooltip,
+                        callbacks: {
+                            label: function(context) {
+                                const amounts = ['3.5亿 SCR', '2.3亿 SCR', '1.7亿 SCR', '1.5亿 SCR', '1亿 SCR'];
+                                return `${context.label}: ${context.parsed}% (${amounts[context.dataIndex]})`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // 解锁进度饼图
+        const unlockProgressCtx = document.getElementById('unlockProgressChart').getContext('2d');
+        new Chart(unlockProgressCtx, {
+            type: 'pie',
+            data: {
+                labels: ['已解锁', '锁定中', '未追踪'],
+                datasets: [{
+                    data: [19, 73, 8],
+                    backgroundColor: [
+                        'rgba(34, 197, 94, 0.85)',  // green-500 with opacity
+                        'rgba(239, 68, 68, 0.85)',  // red-500 with opacity
+                        'rgba(107, 114, 128, 0.85)' // gray-500 with opacity
+                    ],
+                    hoverBackgroundColor: [
+                        'rgb(34, 197, 94)',
+                        'rgb(239, 68, 68)',
+                        'rgb(107, 114, 128)'
+                    ]
+                }]
+            },
+            options: {
+                ...commonOptions,
+                plugins: {
+                    ...commonOptions.plugins,
+                    tooltip: {
+                        ...commonOptions.plugins.tooltip,
+                        callbacks: {
+                            label: function(context) {
+                                const amounts = ['1.9亿 SCR', '7.3亿 SCR', '0.8亿 SCR'];
+                                return `${context.label}: ${context.parsed}% (${amounts[context.dataIndex]})`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
